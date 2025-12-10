@@ -1,17 +1,24 @@
 import { useState } from 'react';
 import { SplashScreen } from './components/nesti/SplashScreen';
+import { Onboarding } from './components/nesti/Onboarding';
 import { MainLayout } from './components/nesti/MainLayout';
 import { FeedPage } from './components/nesti/FeedPage';
 import { MyNestPage } from './components/nesti/MyNestPage';
 import { SettingsPage } from './components/nesti/SettingsPage';
 import { DiscoveriesPage } from './components/nesti/DiscoveriesPage';
+import { AgendaPage } from './components/nesti/AgendaPage';
+import { ChatPage } from './components/nesti/ChatPage';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<'splash' | 'main'>('splash');
+  const [currentScreen, setCurrentScreen] = useState<'splash' | 'onboarding' | 'main'>('splash');
   const [currentPage, setCurrentPage] = useState<string>('feed');
 
   if (currentScreen === 'splash') {
-    return <SplashScreen onContinue={() => setCurrentScreen('main')} />;
+    return <SplashScreen onContinue={() => setCurrentScreen('onboarding')} />;
+  }
+
+  if (currentScreen === 'onboarding') {
+    return <Onboarding onComplete={() => setCurrentScreen('main')} />;
   }
 
   const renderPage = () => {
@@ -19,11 +26,13 @@ export default function App() {
       case 'feed':
         return <FeedPage />;
       case 'agenda':
-        return <PlaceholderPage title="Agenda & Tâches" icon="📅" />;
+        return <AgendaPage />;
       case 'nest':
         return <MyNestPage />;
       case 'discoveries':
         return <DiscoveriesPage />;
+      case 'chat':
+        return <ChatPage />;
       case 'settings':
         return <SettingsPage />;
       default:
@@ -41,29 +50,5 @@ export default function App() {
     >
       {renderPage()}
     </MainLayout>
-  );
-}
-
-// Placeholder component for pages not yet implemented
-function PlaceholderPage({ title, icon }: { title: string; icon: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-6">
-      <div className="text-center space-y-4">
-        <div className="text-8xl mb-4">{icon}</div>
-        <h2 className="text-3xl font-bold text-foreground" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          {title}
-        </h2>
-        <p className="text-muted-foreground max-w-md leading-relaxed">
-          Cette page sera bientôt disponible avec toutes ses fonctionnalités : 
-          gestion d'événements, tâches partagées, rappels intelligents et bien plus encore !
-        </p>
-        <div className="mt-8 p-6 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl max-w-lg mx-auto">
-          <p className="text-sm text-foreground leading-relaxed">
-            🚀 <strong>À venir :</strong> Vue calendrier, création d'événements récurrents, 
-            assignation de tâches aux membres du nest, et synchronisation avec vos calendriers.
-          </p>
-        </div>
-      </div>
-    </div>
   );
 }

@@ -1,186 +1,294 @@
 import { useState } from "react";
-import { Send, Sparkles, Settings, Heart } from "lucide-react";
+import { Send, Mic, Sparkles, ThumbsUp, ThumbsDown, Calendar, MapPin } from "lucide-react";
+import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
-import { Avatar, AvatarFallback } from "../ui/avatar";
-import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 
 export function ChatPage() {
-  const [message, setMessage] = useState("");
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [inputMessage, setInputMessage] = useState("");
 
   const messages = [
     {
       id: 1,
-      author: "Sophie",
-      avatar: "S",
-      message: "Bonjour tout le monde ! N'oubliez pas le rendez-vous chez le dentiste cet après-midi.",
-      time: "08:30",
-      isMe: true,
-      color: "from-cyan-400 to-emerald-400",
+      type: "user",
+      content: "Bonjour Nesti ! Peux-tu me suggérer une activité calme pour Lucas aujourd'hui ? Il a du mal à se concentrer ces derniers jours.",
+      timestamp: "10:30",
     },
     {
       id: 2,
-      author: "Pierre",
-      avatar: "P",
-      message: "Merci pour le rappel ! À quelle heure exactement ?",
-      time: "08:35",
-      isMe: false,
-      color: "from-blue-400 to-purple-400",
+      type: "ai",
+      content: "Bonjour Sophie ! 👋 Bien sûr, je comprends. D'après son profil TDAH, voici 3 activités calmes et adaptées pour Lucas :",
+      timestamp: "10:31",
+      suggestions: [
+        {
+          icon: "🌳",
+          title: "Parc sensoriel de Bercy",
+          description: "Environnement calme avec zones sensorielles",
+          details: "📍 3,2 km • Gratuit • ⭐ 4.8",
+          tags: ["Calme", "Adapté TDAH"],
+        },
+        {
+          icon: "📚",
+          title: "Bibliothèque Louise Michel",
+          description: "Espace jeunesse avec coussins et jeux calmes",
+          details: "📍 1,8 km • Gratuit • ⭐ 4.6",
+          tags: ["Silencieux", "Lecture"],
+        },
+        {
+          icon: "🧩",
+          title: "Atelier puzzle géant",
+          description: "Session de 1h avec puzzles adaptatifs",
+          details: "📍 4,5 km • 8€ • ⭐ 4.9",
+          tags: ["Concentration", "Petit groupe"],
+        },
+      ],
+      helpful: true,
     },
     {
       id: 3,
-      author: "Sophie",
-      avatar: "S",
-      message: "14h00, pour toi et Jules",
-      time: "08:36",
-      isMe: true,
-      color: "from-cyan-400 to-emerald-400",
+      type: "user",
+      content: "Super ! Et pour Emma qui s'ennuie un peu ces vacances ?",
+      timestamp: "10:35",
     },
     {
       id: 4,
-      author: "Léa",
-      avatar: "L",
-      message: "Maman, tu peux m'aider avec mes devoirs de maths ce soir ?",
-      time: "09:15",
-      isMe: false,
-      color: "from-pink-400 to-orange-400",
+      type: "ai",
+      content: "Emma adore la nature d'après vos préférences ! Voici ce que je propose pour elle :",
+      timestamp: "10:35",
+      suggestions: [
+        {
+          icon: "🦜",
+          title: "Observation oiseaux au Parc",
+          description: "Initiation ornithologie avec guide nature",
+          details: "📅 Samedi 10h • 📍 2,1 km • 12€",
+          tags: ["Nature", "Pédagogique"],
+        },
+        {
+          icon: "🌿",
+          title: "Création d'herbier collectif",
+          description: "Collecte et identification de plantes",
+          details: "📅 Dimanche 14h • 📍 3,5 km • 15€",
+          tags: ["Créatif", "Nature"],
+        },
+        {
+          icon: "🗺️",
+          title: "Chasse au trésor botanique",
+          description: "Jeu de piste nature en famille",
+          details: "📅 Mercredi 15h • 📍 5 km • Gratuit",
+          tags: ["Aventure", "Famille"],
+        },
+      ],
+      helpful: false,
     },
     {
       id: 5,
-      author: "Sophie",
-      avatar: "S",
-      message: "Bien sûr ma chérie, après le dîner ça te va ?",
-      time: "09:17",
-      isMe: true,
-      color: "from-cyan-400 to-emerald-400",
+      type: "user",
+      content: "Parfait ! Peux-tu ajouter la chasse au trésor à notre calendrier familial ?",
+      timestamp: "10:38",
     },
     {
       id: 6,
-      author: "Pierre",
-      avatar: "P",
-      message: "J'arrive vers 19h ce soir, je rapporte une pizza ?",
-      time: "10:30",
-      isMe: false,
-      color: "from-blue-400 to-purple-400",
-    },
-    {
-      id: 7,
-      author: "Jules",
-      avatar: "J",
-      message: "Ouiii ! Margherita pour moi 🍕",
-      time: "10:32",
-      isMe: false,
-      color: "from-amber-400 to-yellow-400",
+      type: "ai",
+      content: "✅ J'ai ajouté \"Chasse au trésor botanique\" au calendrier familial :\n\n📅 Mercredi 27 Janvier, 15h00\n📍 Parc de Vincennes (5 km)\n👥 Participants suggérés : Toute la famille\n\nVoulez-vous que j'envoie une notification aux membres du nest ?",
+      timestamp: "10:38",
+      action: "calendar_added",
+      helpful: false,
     },
   ];
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      // Handle message sending
-      setMessage("");
-    }
-  };
+  const quickActions = [
+    { icon: "🎨", label: "Activités créatives" },
+    { icon: "⚽", label: "Sports" },
+    { icon: "🍽️", label: "Restaurants" },
+    { icon: "🎭", label: "Culture" },
+  ];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-180px)]">
-      {/* AI Assistant Toggle */}
-      <div className="mb-4 p-4 glass rounded-3xl border border-white/40">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-500" strokeWidth={1.5} />
-            <div>
-              <p className="text-sm text-slate-800">Assistant IA</p>
-              <p className="text-xs text-slate-500">Reformulation de messages</p>
-            </div>
+    <div className="flex flex-col h-screen bg-background">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-card border-b border-border backdrop-blur-lg px-4 py-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center">
+            <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <button
-            onClick={() => setShowAIAssistant(!showAIAssistant)}
-            className={`px-4 py-2 rounded-2xl text-xs transition-all ${
-              showAIAssistant
-                ? "bg-gradient-to-r from-amber-400 to-orange-400 text-white shadow-lg"
-                : "bg-slate-200 text-slate-600"
-            }`}
-          >
-            {showAIAssistant ? "Activé" : "Désactivé"}
-          </button>
+          <div>
+            <h2 className="font-semibold text-foreground">Nesti IA</h2>
+            <Badge className="bg-success text-white text-xs px-2 py-0.5">
+              Assistant familial
+            </Badge>
+          </div>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-1">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex gap-3 ${msg.isMe ? "flex-row-reverse" : "flex-row"}`}
-          >
-            <Avatar className="w-10 h-10 flex-shrink-0 border-2 border-white shadow-md">
-              <AvatarFallback className={`bg-gradient-to-br ${msg.color} text-white text-sm`}>
-                {msg.avatar}
-              </AvatarFallback>
-            </Avatar>
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 pb-32">
+        {/* Welcome Message */}
+        <div className="text-center py-6">
+          <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl flex items-center justify-center">
+            <Sparkles className="w-8 h-8 text-primary" />
+          </div>
+          <h3 className="font-semibold text-foreground mb-2">Bienvenue ! 👋</h3>
+          <p className="text-sm text-muted-foreground px-6">
+            Je suis Nesti, votre assistant familial IA. Posez-moi vos questions sur les activités, 
+            l'organisation familiale, ou demandez-moi conseil !
+          </p>
+        </div>
 
-            <div className={`flex flex-col max-w-[75%] ${msg.isMe ? "items-end" : "items-start"}`}>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs text-slate-500">{msg.author}</span>
-                <span className="text-xs text-slate-400">{msg.time}</span>
+        {/* Chat Messages */}
+        {messages.map((message) => (
+          <div key={message.id} className={`flex gap-3 ${message.type === "user" ? "justify-end" : "justify-start"}`}>
+            {message.type === "ai" && (
+              <Avatar className="w-10 h-10 flex-shrink-0">
+                <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white">
+                  <Sparkles className="w-5 h-5" />
+                </AvatarFallback>
+              </Avatar>
+            )}
+            
+            <div className={`max-w-[80%] ${message.type === "user" ? "order-first" : ""}`}>
+              {/* Message Bubble */}
+              <div className={`rounded-2xl p-4 ${
+                message.type === "user" 
+                  ? "bg-primary text-white rounded-tr-sm" 
+                  : "bg-card border border-border rounded-tl-sm"
+              }`}>
+                <p className={`text-sm leading-relaxed whitespace-pre-line ${
+                  message.type === "user" ? "text-white" : "text-foreground"
+                }`}>
+                  {message.content}
+                </p>
+                
+                {/* Action Confirmation */}
+                {message.action === "calendar_added" && (
+                  <div className="mt-3 flex gap-2">
+                    <Button size="sm" className="bg-success hover:bg-success/90 text-white rounded-xl text-xs">
+                      Oui, notifier
+                    </Button>
+                    <Button variant="outline" size="sm" className="border-border rounded-xl text-xs">
+                      Non merci
+                    </Button>
+                  </div>
+                )}
               </div>
-              <div
-                className={`p-3 rounded-2xl shadow-sm ${
-                  msg.isMe
-                    ? "bg-gradient-to-br from-cyan-400/20 to-emerald-400/20 border border-cyan-300/30 rounded-tr-sm"
-                    : "glass border border-white/40 rounded-tl-sm"
-                }`}
-              >
-                <p className="text-sm text-slate-800 leading-relaxed">{msg.message}</p>
-              </div>
+
+              {/* AI Suggestions Cards */}
+              {message.suggestions && (
+                <div className="mt-3 space-y-2">
+                  {message.suggestions.map((suggestion, idx) => (
+                    <Card key={idx} className="border-border bg-card overflow-hidden hover:shadow-md transition-shadow">
+                      <CardContent className="p-3">
+                        <div className="flex gap-3">
+                          <div className="w-12 h-12 bg-gradient-to-br from-secondary/20 to-primary/10 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                            {suggestion.icon}
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-foreground text-sm mb-1">
+                              {suggestion.title}
+                            </h4>
+                            <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
+                              {suggestion.description}
+                            </p>
+                            <p className="text-xs text-muted-foreground mb-2">
+                              {suggestion.details}
+                            </p>
+                            <div className="flex flex-wrap gap-1">
+                              {suggestion.tags.map((tag) => (
+                                <Badge key={tag} variant="secondary" className="bg-primary/10 text-primary text-xs px-2 py-0.5">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+
+                          <Button variant="ghost" size="sm" className="flex-shrink-0 hover:bg-primary/10 text-primary rounded-xl h-8 w-8 p-0">
+                            <Calendar className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Timestamp */}
+              <p className={`text-xs text-muted-foreground mt-1 ${message.type === "user" ? "text-right" : "text-left"}`}>
+                {message.timestamp}
+              </p>
+
+              {/* AI Message Feedback */}
+              {message.type === "ai" && message.helpful !== undefined && (
+                <div className="flex gap-2 mt-2">
+                  <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-success transition-colors">
+                    <ThumbsUp className="w-3 h-3" />
+                    Utile
+                  </button>
+                  <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors">
+                    <ThumbsDown className="w-3 h-3" />
+                    Pas utile
+                  </button>
+                </div>
+              )}
             </div>
+
+            {message.type === "user" && (
+              <Avatar className="w-10 h-10 flex-shrink-0">
+                <AvatarFallback className="bg-forest-green text-white">
+                  S
+                </AvatarFallback>
+              </Avatar>
+            )}
           </div>
         ))}
       </div>
 
-      {/* Input Area */}
-      <div className="sticky bottom-0 pt-4 pb-2">
-        <div className="glass-strong rounded-3xl border border-white/40 p-3 shadow-lg">
-          <div className="flex items-center gap-2">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-              placeholder="Écrivez votre message..."
-              className="flex-1 border-0 bg-white/50 rounded-2xl focus:ring-2 focus:ring-cyan-400/20 h-11"
-            />
-            <Button
-              onClick={handleSendMessage}
-              disabled={!message.trim()}
-              className="bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-600 hover:to-emerald-500 text-white rounded-2xl px-5 border-0 shadow-md h-11"
-            >
-              <Send className="w-5 h-5" strokeWidth={1.5} />
-            </Button>
+      {/* Quick Actions */}
+      <div className="sticky bottom-20 px-4 pb-2">
+        <div className="bg-card/95 backdrop-blur-lg border border-border rounded-2xl p-3">
+          <p className="text-xs text-muted-foreground mb-2 px-1">Suggestions rapides :</p>
+          <div className="flex gap-2 overflow-x-auto">
+            {quickActions.map((action) => (
+              <button
+                key={action.label}
+                className="flex items-center gap-2 px-3 py-2 bg-muted hover:bg-primary/10 rounded-xl text-sm whitespace-nowrap transition-colors"
+              >
+                <span>{action.icon}</span>
+                <span className="text-foreground">{action.label}</span>
+              </button>
+            ))}
           </div>
-          
-          {showAIAssistant && message.trim() && (
-            <div className="mt-3 pt-3 border-t border-white/40">
-              <div className="flex items-start gap-2 p-3 rounded-2xl bg-gradient-to-br from-amber-50/80 to-orange-50/80">
-                <Sparkles className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
-                <div className="flex-1">
-                  <p className="text-xs text-amber-900/70 mb-1">Suggestion IA</p>
-                  <p className="text-xs text-amber-900 leading-relaxed">
-                    "Bonjour, {message}"
-                  </p>
-                </div>
-                <button className="text-xs text-amber-700 hover:text-amber-800 underline">
-                  Utiliser
-                </button>
-              </div>
-            </div>
-          )}
         </div>
+      </div>
 
-        {/* Disclaimer */}
-        <div className="mt-3 flex items-center justify-center gap-1 text-xs text-slate-500">
-          <Heart className="w-3 h-3" strokeWidth={1.5} />
-          <span>Un espace bienveillant pour votre famille</span>
+      {/* Input */}
+      <div className="sticky bottom-0 z-10 bg-card border-t border-border backdrop-blur-lg px-4 py-4">
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            className="border-border rounded-2xl flex-shrink-0"
+          >
+            <Mic className="w-5 h-5 text-accent" />
+          </Button>
+          
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              placeholder="Posez une question à Nesti..."
+              className="w-full px-4 py-3 bg-muted rounded-2xl border-0 text-sm focus:ring-2 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground"
+            />
+          </div>
+
+          <Button
+            size="icon"
+            disabled={!inputMessage.trim()}
+            className="bg-primary hover:bg-primary/90 text-white rounded-2xl flex-shrink-0 disabled:opacity-50"
+          >
+            <Send className="w-5 h-5" />
+          </Button>
         </div>
       </div>
     </div>

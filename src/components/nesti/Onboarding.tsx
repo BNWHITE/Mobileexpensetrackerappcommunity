@@ -1,201 +1,346 @@
 import { useState } from "react";
-import * as React from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Sparkles, ChevronRight, ChevronLeft, Users, Settings, Shield, Check, Heart, Leaf } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, Users, Sparkles, Calendar, Heart } from "lucide-react";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { Badge } from "../ui/badge";
-import nestiLogo from "figma:asset/30630fb08ddc307e291924bf6c94cf58379bb04d.png";
+import nestiLogo from "figma:asset/bc152d65360f7c7224736e313603b3d66553bb79.png";
 
 interface OnboardingProps {
   onComplete: () => void;
 }
 
 export function Onboarding({ onComplete }: OnboardingProps) {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [preferences, setPreferences] = useState({
+    sports: [] as string[],
+    hobbies: [] as string[],
+    vacations: [] as string[],
+  });
+  const [nestName, setNestName] = useState("");
 
-  const slides = [
+  const steps = [
     {
-      icon: Heart,
       title: "Bienvenue dans Nesti",
-      description: "Un espace chaleureux et serein pour organiser votre vie familiale",
-      badge: null,
-      color: "from-pink-400 to-orange-400",
+      subtitle: "Votre assistant familial inclusif",
+      description: "Organisez votre vie familiale, découvrez des activités adaptées et restez connectés.",
+      icon: "🏡",
+      illustration: (
+        <div className="relative w-48 h-48 mx-auto">
+          <motion.div
+            animate={{ 
+              rotate: [0, 5, 0, -5, 0],
+              y: [0, -10, 0]
+            }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="w-full h-full"
+          >
+            <img src={nestiLogo} alt="Nesti" className="w-full h-full object-contain drop-shadow-lg" />
+          </motion.div>
+        </div>
+      ),
     },
     {
-      icon: Leaf,
-      title: "Vous gardez le contrôle",
-      description:
-        "Configurez l'application selon VOS valeurs. Activez ou désactivez chaque fonctionnalité.",
-      badge: "100% Personnalisable",
-      color: "from-emerald-400 to-cyan-400",
+      title: "Créez votre Nest",
+      subtitle: "Donnez un nom à votre famille",
+      description: "C'est votre espace privé et chaleureux où vous partagerez vos meilleurs moments.",
+      icon: "👨‍👩‍👧‍👦",
+      illustration: (
+        <div className="w-full max-w-xs mx-auto">
+          <div className="relative">
+            <Users className="w-32 h-32 mx-auto text-primary/30 mb-6" />
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="absolute -top-4 -right-4 w-12 h-12 bg-accent rounded-full flex items-center justify-center"
+            >
+              <Heart className="w-6 h-6 text-white" />
+            </motion.div>
+          </div>
+        </div>
+      ),
+      form: (
+        <div className="space-y-4 mt-6">
+          <div>
+            <Label htmlFor="nestName" className="text-foreground">Nom de votre nest</Label>
+            <Input
+              id="nestName"
+              value={nestName}
+              onChange={(e) => setNestName(e.target.value)}
+              placeholder="Ex: Famille Martin, Les Dupont..."
+              className="mt-2 bg-background border-border text-foreground text-lg"
+            />
+          </div>
+        </div>
+      ),
     },
     {
-      icon: Shield,
-      title: "Transparence & Éthique",
-      description:
-        "Notre IA est un assistant technique, pas un conseiller. Conformité RGPD & EU AI Act garantie.",
-      badge: null,
-      color: "from-cyan-400 to-blue-400",
+      title: "Personnalisez vos préférences",
+      subtitle: "Aidez Nesti à vous connaître",
+      description: "Sélectionnez vos centres d'intérêt pour recevoir des suggestions d'activités adaptées.",
+      icon: "✨",
+      illustration: (
+        <div className="w-full max-w-xs mx-auto">
+          <Sparkles className="w-32 h-32 mx-auto text-primary/30 mb-6" />
+        </div>
+      ),
+      form: (
+        <div className="space-y-6 mt-6">
+          {/* Sports */}
+          <div>
+            <Label className="text-foreground mb-3 block">🏃 Sports & Activités physiques</Label>
+            <div className="flex flex-wrap gap-2">
+              {["Football", "Natation", "Tennis", "Yoga", "Vélo", "Danse"].map((sport) => (
+                <button
+                  key={sport}
+                  onClick={() => {
+                    setPreferences({
+                      ...preferences,
+                      sports: preferences.sports.includes(sport)
+                        ? preferences.sports.filter((s) => s !== sport)
+                        : [...preferences.sports, sport],
+                    });
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    preferences.sports.includes(sport)
+                      ? "bg-success text-white shadow-md scale-105"
+                      : "bg-muted text-muted-foreground hover:bg-success/20"
+                  }`}
+                >
+                  {sport}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Hobbies */}
+          <div>
+            <Label className="text-foreground mb-3 block">🎨 Loisirs créatifs</Label>
+            <div className="flex flex-wrap gap-2">
+              {["Lecture", "Cuisine", "Jardinage", "Art", "Musique", "Photo"].map((hobby) => (
+                <button
+                  key={hobby}
+                  onClick={() => {
+                    setPreferences({
+                      ...preferences,
+                      hobbies: preferences.hobbies.includes(hobby)
+                        ? preferences.hobbies.filter((h) => h !== hobby)
+                        : [...preferences.hobbies, hobby],
+                    });
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    preferences.hobbies.includes(hobby)
+                      ? "bg-secondary text-white shadow-md scale-105"
+                      : "bg-muted text-muted-foreground hover:bg-secondary/20"
+                  }`}
+                >
+                  {hobby}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Vacations */}
+          <div>
+            <Label className="text-foreground mb-3 block">🏖️ Types de vacances</Label>
+            <div className="flex flex-wrap gap-2">
+              {["Plage", "Montagne", "Ville", "Campagne"].map((vacation) => (
+                <button
+                  key={vacation}
+                  onClick={() => {
+                    setPreferences({
+                      ...preferences,
+                      vacations: preferences.vacations.includes(vacation)
+                        ? preferences.vacations.filter((v) => v !== vacation)
+                        : [...preferences.vacations, vacation],
+                    });
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    preferences.vacations.includes(vacation)
+                      ? "bg-accent text-white shadow-md scale-105"
+                      : "bg-muted text-muted-foreground hover:bg-accent/20"
+                  }`}
+                >
+                  {vacation}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <Badge className="bg-primary/10 text-primary text-sm px-3 py-2">
+              {preferences.sports.length + preferences.hobbies.length + preferences.vacations.length} préférences sélectionnées
+            </Badge>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Tout est prêt !",
+      subtitle: "Commencez l'aventure Nesti",
+      description: "Vous pouvez maintenant inviter des membres, planifier vos activités et découvrir des suggestions personnalisées.",
+      icon: "🎉",
+      illustration: (
+        <div className="w-full max-w-xs mx-auto space-y-4">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring" }}
+            className="w-20 h-20 mx-auto bg-gradient-to-br from-success to-primary rounded-full flex items-center justify-center"
+          >
+            <Check className="w-10 h-10 text-white" />
+          </motion.div>
+          
+          <div className="space-y-2 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="flex items-center justify-center gap-2 text-sm text-muted-foreground"
+            >
+              <Users className="w-4 h-4 text-primary" />
+              <span>Nest: <strong className="text-foreground">{nestName || "Votre famille"}</strong></span>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex items-center justify-center gap-2 text-sm text-muted-foreground"
+            >
+              <Sparkles className="w-4 h-4 text-secondary" />
+              <span>
+                <strong className="text-foreground">
+                  {preferences.sports.length + preferences.hobbies.length + preferences.vacations.length}
+                </strong> préférences configurées
+              </span>
+            </motion.div>
+          </div>
+        </div>
+      ),
     },
   ];
 
-  const nextSlide = () => {
-    if (currentSlide < slides.length - 1) {
-      setCurrentSlide(currentSlide + 1);
-    } else {
+  const currentStepData = steps[currentStep];
+  const isLastStep = currentStep === steps.length - 1;
+  const canProceed = currentStep === 1 ? nestName.trim().length > 0 : true;
+
+  const handleNext = () => {
+    if (isLastStep) {
       onComplete();
+    } else {
+      setCurrentStep(currentStep + 1);
     }
   };
 
-  const prevSlide = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide(currentSlide - 1);
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
   return (
-    <div className="mobile-container min-h-screen flex flex-col items-center justify-between p-6 py-12">
-      {/* Logo */}
-      <div className="flex items-center justify-center mb-8">
-        <img 
-          src={nestiLogo} 
-          alt="Nesti Logo" 
-          className="w-16 h-16 object-contain"
-        />
-      </div>
-
-      {/* Slides */}
-      <div className="flex-1 flex items-center justify-center w-full">
-        <div className="w-full max-w-md">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentSlide}
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="text-center space-y-8"
-            >
-              {/* Icon with gradient background */}
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className="flex justify-center"
-              >
-                <div className={`w-28 h-28 rounded-3xl bg-gradient-to-br ${slides[currentSlide].color} p-[2px] shadow-xl`}>
-                  <div className="w-full h-full rounded-3xl glass-strong flex items-center justify-center">
-                    {React.createElement(slides[currentSlide].icon, { 
-                      className: "w-14 h-14 text-slate-700", 
-                      strokeWidth: 1.5 
-                    })}
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Badge */}
-              {slides[currentSlide].badge && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <Badge className="bg-gradient-to-r from-emerald-400 to-cyan-400 text-white px-5 py-1.5 rounded-full border-0 shadow-lg">
-                    <Sparkles className="w-3 h-3 mr-1.5" />
-                    {slides[currentSlide].badge}
-                  </Badge>
-                </motion.div>
-              )}
-
-              {/* Title */}
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="text-3xl text-slate-800 px-4"
-              >
-                {slides[currentSlide].title}
-              </motion.h2>
-
-              {/* Description */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="text-base text-slate-600 leading-relaxed px-6"
-              >
-                {slides[currentSlide].description}
-              </motion.p>
-
-              {/* RGPD Badges for last slide */}
-              {currentSlide === 2 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="flex gap-3 justify-center flex-wrap px-6"
-                >
-                  <Badge variant="outline" className="px-4 py-2 rounded-2xl border-cyan-300 text-cyan-700">
-                    <Shield className="w-4 h-4 mr-2" />
-                    RGPD
-                  </Badge>
-                  <Badge variant="outline" className="px-4 py-2 rounded-2xl border-emerald-300 text-emerald-700">
-                    <Check className="w-4 h-4 mr-2" />
-                    EU AI Act
-                  </Badge>
-                </motion.div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Bottom section */}
-      <div className="w-full max-w-md space-y-6">
-        {/* Progress Dots */}
-        <div className="flex justify-center gap-2">
-          {slides.map((_, index) => (
+    <div className="mobile-container min-h-screen bg-gradient-to-br from-cream via-white to-sky-blue/10 flex flex-col">
+      {/* Progress Bar */}
+      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg border-b border-border px-4 py-3">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            Étape {currentStep + 1} / {steps.length}
+          </span>
+          {currentStep > 0 && !isLastStep && (
             <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                index === currentSlide 
-                  ? "bg-gradient-to-r from-cyan-500 to-emerald-400 w-8" 
-                  : "bg-slate-300 w-2"
-              }`}
-            />
-          ))}
+              onClick={() => onComplete()}
+              className="text-sm text-primary hover:underline"
+            >
+              Passer
+            </button>
+          )}
         </div>
+        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            transition={{ duration: 0.3 }}
+            className="h-full bg-gradient-to-r from-primary to-secondary"
+          />
+        </div>
+      </div>
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center gap-4">
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto px-6 py-8">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
+            {/* Illustration */}
+            <div className="py-8">
+              {currentStepData.illustration}
+            </div>
+
+            {/* Text Content */}
+            <div className="text-center space-y-3">
+              <div className="text-5xl mb-4">{currentStepData.icon}</div>
+              <h2 className="text-2xl font-bold text-foreground" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                {currentStepData.title}
+              </h2>
+              <p className="text-lg text-primary font-medium">
+                {currentStepData.subtitle}
+              </p>
+              <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
+                {currentStepData.description}
+              </p>
+            </div>
+
+            {/* Form */}
+            {currentStepData.form && (
+              <div className="max-w-md mx-auto">
+                {currentStepData.form}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Navigation */}
+      <div className="sticky bottom-0 bg-white/80 backdrop-blur-lg border-t border-border px-6 py-4">
+        <div className="flex gap-3">
+          {currentStep > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleBack}
+              className="border-border rounded-2xl"
+            >
+              <ChevronLeft className="w-5 h-5 mr-2" />
+              Retour
+            </Button>
+          )}
+          
           <Button
-            variant="ghost"
-            onClick={prevSlide}
-            disabled={currentSlide === 0}
-            className="text-slate-600 rounded-2xl"
+            onClick={handleNext}
+            disabled={!canProceed}
+            className={`flex-1 rounded-2xl ${
+              isLastStep
+                ? "bg-gradient-to-r from-success to-primary hover:opacity-90"
+                : "bg-primary hover:bg-primary/90"
+            } text-white shadow-lg disabled:opacity-50`}
           >
-            <ChevronLeft className="w-5 h-5 mr-1" />
-            Retour
-          </Button>
-
-          <Button 
-            onClick={nextSlide} 
-            className="bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-600 hover:to-emerald-500 text-white px-8 py-6 rounded-2xl shadow-lg shadow-cyan-500/30 border-0"
-          >
-            {currentSlide === slides.length - 1 ? "C'est parti" : "Suivant"}
-            <ChevronRight className="w-5 h-5 ml-1" />
-          </Button>
-        </div>
-
-        {/* Skip */}
-        <div className="text-center">
-          <Button 
-            variant="link" 
-            onClick={onComplete} 
-            className="text-slate-500 text-sm"
-          >
-            Passer l'introduction
+            {isLastStep ? (
+              <>
+                <Check className="w-5 h-5 mr-2" />
+                Commencer
+              </>
+            ) : (
+              <>
+                Suivant
+                <ChevronRight className="w-5 h-5 ml-2" />
+              </>
+            )}
           </Button>
         </div>
       </div>

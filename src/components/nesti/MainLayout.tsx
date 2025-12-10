@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { Home, Calendar, Users, Compass, Settings, Bell, Sun, Moon } from "lucide-react";
+import { Home, Calendar, Users, Compass, Settings, Bell, Sun, Moon, MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import nestiLogo from "figma:asset/bc152d65360f7c7224736e313603b3d66553bb79.png";
@@ -29,7 +29,7 @@ export function MainLayout({
     { id: "agenda", label: "Agenda", icon: Calendar },
     { id: "nest", label: "Mon Nest", icon: Users },
     { id: "discoveries", label: "Découvertes", icon: Compass },
-    { id: "settings", label: "Réglages", icon: Settings },
+    { id: "chat", label: "Nesti IA", icon: MessageCircle },
   ];
 
   const getRoleBadgeClass = (role: string) => {
@@ -93,11 +93,13 @@ export function MainLayout({
               </button>
 
               {/* User Avatar */}
-              <Avatar className="w-9 h-9 border-2 border-primary/20">
-                <AvatarFallback className={`${getRoleBadgeClass(userRole)} text-white text-sm`}>
-                  {userName.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
+              <div onClick={() => onNavigate('settings')} className="cursor-pointer">
+                <Avatar className="w-9 h-9 border-2 border-primary/20 hover:border-primary/40 transition-colors">
+                  <AvatarFallback className={`${getRoleBadgeClass(userRole)} text-white text-sm`}>
+                    {userName.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
             </div>
           </div>
         </div>
